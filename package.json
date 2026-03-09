@@ -1,0 +1,10 @@
+{
+  "name": "academy-powertoys",
+  "version": "1.0.0",
+  "description": "Unofficial power-user enhancements for HTB Academy",
+  "private": true,
+  "scripts": {
+    "build": "./build.sh"
+  },
+  "license": "MIT"
+}
