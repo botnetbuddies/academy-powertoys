@@ -1,6 +1,6 @@
   registerFeature({
     id: 'theme-mode',
-    label: 'Theme',
+    label: 'Theme (Broken, being worked on)',
     description: 'Switch between Default (dark), Light, or Print-friendly theme',
     scope: 'global',
     default: true,

@@ -45,6 +45,9 @@ FILES=(
   # Dashboard features
   src/features/dashboard/default-enrolled-path-tab.js
   src/features/dashboard/sort-completed-last.js
+  src/features/dashboard/expand-path-modules.js
+  src/features/dashboard/rename-job-section.js
+  src/features/dashboard/grid-carousels.js
 
   # Module features
   src/features/module/widen-content.js

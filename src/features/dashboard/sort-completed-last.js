@@ -16,7 +16,7 @@
       }
 
       // Sort carousel/list sections
-      const sectionTitles = ['Favourite Modules', 'Popular Modules', 'Popular Paths', 'Get a new Job'];
+      const sectionTitles = ['Favourite Modules', 'Modules In Progress', 'Popular Modules', 'Popular Paths', 'Get a new Job', 'Job Role Paths'];
 
       for (const title of sectionTitles) {
         const heading = [...document.querySelectorAll('h2')].find(
