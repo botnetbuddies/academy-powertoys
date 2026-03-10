@@ -34,7 +34,7 @@
 
       // Known SVG path substrings → label
       const knownButtons = [
-        { match: 'M4.75 17C4.54167', label: 'Cheatsheet' },
+        { match: 'M4.75 17C4.54167', label: 'Notes' },
         { match: 'M9.99765 15C10.277', label: 'Help' },
         { match: 'M7.5 15V13.5H17', label: 'TOC' },
       ];
