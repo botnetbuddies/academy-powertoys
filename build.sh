@@ -62,6 +62,7 @@ FILES=(
   src/features/module/expand-current-module-info.js
   src/features/module/expand-questions.js
   src/features/module/hide-solutions-promo.js
+  src/features/module/label-toolbar-buttons.js
 
   # UI
   src/ui/settings-panel.js
