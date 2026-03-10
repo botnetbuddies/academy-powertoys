@@ -2,6 +2,15 @@
 
 Unofficial power-user enhancements for [HTB Academy](https://academy.hackthebox.com). No affiliation with Hack The Box.
 
+## Troubleshooting First
+
+If HTB Academy behaves oddly, disable Academy PowerToys and retest before contacting HTB support or reporting a site bug to avoid unnecessary support tickets.
+
+1. Disable the userscript in your script manager.
+2. Hard refresh HTB Academy and reproduce the issue.
+3. If the issue is gone, it is likely script-related.
+4. If the issue remains with the script disabled, it is likely an HTB-side issue.
+
 ## Install
 
 1. Install [Violentmonkey](https://violentmonkey.github.io/), Tampermonkey, or Greasemonkey
