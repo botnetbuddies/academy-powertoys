@@ -1,77 +1,40 @@
   registerFeature({
     id: 'expand-current-module-info',
-    label: 'Expand Current Section (Module Info)',
-    description: 'On module overview pages, auto-expand only the current syllabus section',
+    label: 'Expand All Sections (Module Info)',
+    description: 'On module overview pages, auto-expand all syllabus sections',
     scope: 'module',
     default: true,
     run() {
       if (!/^\/app\/module\/\d+\/?$/.test(location.pathname)) return;
-      const container = document.querySelector('.module-sections');
-      if (!container) return;
-      if (container.dataset.aptCurrentExpandInit === '1') return;
-      container.dataset.aptCurrentExpandInit = '1';
 
-      function getCurrentCollapse() {
+      let done = false;
+
+      function expandAll() {
+        if (done) return true;
+
+        const container = document.querySelector('.module-sections');
+        if (!container) return false;
+
         const collapses = [...container.querySelectorAll('.collapse')];
-        if (collapses.length === 0) return null;
-        return collapses.find(c => c.querySelector('.syllabus-number.bg-primary'))
-          || collapses.find(c => {
-            const txt = c.querySelector('.syllabus-sections-inner')?.textContent || '';
-            return /\d+\s*\/\s*\d+\s*sections?/i.test(txt);
-          })
-          || collapses.find(c => {
-            const right = c.querySelector('.syllabus-sections, .secondary-text')?.textContent || '';
-            return !/completed/i.test(right) && /sections?/i.test(right);
-          })
-          || null;
+        if (collapses.length === 0) return false;
+
+        done = true;
+
+        collapses.forEach(collapse => {
+          if (collapse.classList.contains('collapse-open')) return;
+          const cb = collapse.querySelector('input[name="base-accordion-checkbox"], input[type="checkbox"]');
+          if (cb && !cb.checked) cb.click();
+        });
+
+        return true;
       }
 
-      function isOpen(collapse, input) {
-        return !!collapse && (
-          collapse.classList.contains('collapse-open')
-          || input?.checked
-          || !!collapse.querySelector('.collapse-content .base-list > li, .collapse-content .base-row[page], .base-list > li')
-        );
+      if (!expandAll()) {
+        const obs = new MutationObserver((_, o) => {
+          if (expandAll()) o.disconnect();
+        });
+        obs.observe(document.body, { childList: true, subtree: true });
+        setTimeout(() => obs.disconnect(), 10000);
       }
-
-      function attemptOpenCurrent() {
-        const currentCollapse = getCurrentCollapse();
-        if (!currentCollapse) return false;
-
-        const input = currentCollapse.querySelector('input[name="base-accordion-checkbox"], input[type="checkbox"]');
-        const title = currentCollapse.querySelector('.collapse-title');
-        if (!input && !title) return false;
-
-        if (isOpen(currentCollapse, input)) return true;
-
-        // Preferred path: native click on the checkbox so framework listeners fire.
-        if (input && !input.checked) {
-          input.click();
-          if (!isOpen(currentCollapse, input)) {
-            input.checked = true;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-
-        // Fallback for custom click handlers bound to title/container.
-        if (!isOpen(currentCollapse, input) && title) {
-          title.click();
-        }
-        if (!isOpen(currentCollapse, input)) {
-          currentCollapse.classList.add('collapse-open');
-        }
-
-        return isOpen(currentCollapse, input);
-      }
-
-      let tries = 0;
-      const maxTries = 16;
-      const timer = setInterval(() => {
-        tries += 1;
-        if (attemptOpenCurrent() || tries >= maxTries) {
-          clearInterval(timer);
-        }
-      }, 250);
     },
   });

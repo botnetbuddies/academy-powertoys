@@ -365,20 +365,23 @@
             // Normal click still expands/collapses because we prevent navigation unless modifier/middle click is used.
             a = document.createElement('a');
             a.dataset.aptLinkGroup = '1';
-            a.style.cssText = 'position: absolute; inset: 0; z-index: 1; text-decoration: none; color: inherit;';
-            a.addEventListener('click', (e) => {
-              const isModified = e.ctrlKey || e.metaKey;
-              if (isModified) {
+            // pointer-events: none lets normal clicks pass through to the native checkbox/Vue handler.
+            // We temporarily enable pointer-events on modifier/middle-click so the <a> handles new-tab nav.
+            a.style.cssText = 'position: absolute; inset: 0; z-index: 1; text-decoration: none; color: inherit; pointer-events: none;';
+            // Listen on the parent so we can intercept modified clicks before they reach the checkbox
+            headerEl.addEventListener('click', (e) => {
+              if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
                 e.stopPropagation();
-                return;
+                window.open(a.href, '_blank');
               }
-              e.preventDefault();
             }, true);
-            a.addEventListener('auxclick', (e) => {
-              if (e.button === 1) e.stopPropagation();
-            }, true);
-            a.addEventListener('mousedown', (e) => {
-              if (e.button === 1) e.stopPropagation();
+            headerEl.addEventListener('auxclick', (e) => {
+              if (e.button === 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(a.href, '_blank');
+              }
             }, true);
             if (getComputedStyle(headerEl).position === 'static') {
               headerEl.style.position = 'relative';
