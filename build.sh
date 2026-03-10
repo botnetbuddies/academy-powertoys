@@ -59,6 +59,7 @@ FILES=(
   src/features/module/green-inline-code.js
   src/features/module/readable-code-blocks.js
   src/features/module/toc-real-links.js
+  src/features/module/compact-toc-layout.js
   src/features/module/expand-menu.js
   src/features/module/fix-collapse-all.js
   src/features/module/expand-current-module-info.js
