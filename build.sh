@@ -42,6 +42,7 @@ FILES=(
   src/features/global/dismiss-adblock.js
   src/features/global/theme-mode.js
   src/features/global/hover-prefetch.js
+  src/features/global/unstick-navbar.js
 
   # Dashboard features
   src/features/dashboard/default-enrolled-path-tab.js
