@@ -282,6 +282,14 @@ footer .htb-button--outlined:hover{
   background-color: transparent;
   color: black;
 }
+  
+.htb-button--ghost-secondary{
+  color: black !important;;
+}
+
+.htb-button--ghost-secondary:hover{
+  background-color: lightgreen !important;;
+}
 
 textarea[name="note-textarea"]{
   color: black;
