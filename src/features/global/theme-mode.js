@@ -1,11 +1,11 @@
 registerFeature({
   id: "theme-mode",
-  label: "Theme (Broken, being worked on)",
-  description: "Switch between Default (dark), Light, or Print-friendly theme",
+  label: "Theme (Might have small issues)",
+  description: "Switch between Default (dark) or Light",
   scope: "global",
   default: false,
   settings: {
-    mode: "default", // 'default' | 'light' | 'print'
+    mode: "default", // 'default' | 'light' | 'print'(disabled for now)
   },
   settingsUI: {
     type: "select",
@@ -14,7 +14,7 @@ registerFeature({
     options: [
       { value: "default", label: "Default (Dark)" },
       { value: "light", label: "Light" },
-      { value: "print", label: "Print" },
+      // { value: "print", label: "Print" },
     ],
   },
   cleanup() {
