@@ -326,6 +326,11 @@
         return null;
       }
 
+      function openInNewTabSafely(href) {
+        const popup = window.open(href, '_blank', 'noopener,noreferrer');
+        if (popup) popup.opener = null;
+      }
+
       function linkModuleInfoSectionTitles(idMap) {
         if (!/^\/app\/module\/\d+\/?$/.test(location.pathname)) return;
         if (!idMap || idMap.size === 0) return;
@@ -373,14 +378,14 @@
               if (e.ctrlKey || e.metaKey) {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open(a.href, '_blank');
+                openInNewTabSafely(a.href);
               }
             }, true);
             headerEl.addEventListener('auxclick', (e) => {
               if (e.button === 1) {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open(a.href, '_blank');
+                openInNewTabSafely(a.href);
               }
             }, true);
             if (getComputedStyle(headerEl).position === 'static') {

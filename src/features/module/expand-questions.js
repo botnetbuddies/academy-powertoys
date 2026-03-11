@@ -5,30 +5,75 @@
     scope: 'module',
     default: false,
     cleanup() {
-      if (window._aptExpandQuestionsObs) { window._aptExpandQuestionsObs.disconnect(); delete window._aptExpandQuestionsObs; }
-      document.querySelectorAll('#questions-list [data-apt-expanded]').forEach(el => {
-        el.removeAttribute('data-apt-expanded');
-        const cb = el.querySelector('input[type="checkbox"]');
-        if (cb && cb.checked) cb.click();
+      if (window._aptExpandQuestionsObs) {
+        window._aptExpandQuestionsObs.disconnect();
+        delete window._aptExpandQuestionsObs;
+      }
+
+      const getCheckbox = (collapse) =>
+        collapse.querySelector('input[name="base-accordion-checkbox"], input[type="checkbox"]');
+      const getAriaToggle = (collapse) =>
+        collapse.querySelector('.collapse-title [aria-expanded], .collapse-title[aria-expanded]');
+
+      document.querySelectorAll('#questions-list .collapse[data-apt-expanded="1"]').forEach(collapse => {
+        collapse.removeAttribute('data-apt-expanded');
+        const cb = getCheckbox(collapse);
+        if (cb && cb.checked) {
+          cb.click();
+          return;
+        }
+        const ariaToggle = getAriaToggle(collapse);
+        if (ariaToggle && ariaToggle.getAttribute('aria-expanded') === 'true') {
+          ariaToggle.click();
+        }
       });
     },
     run() {
+      const getList = () => document.getElementById('questions-list');
+      const getCheckbox = (collapse) =>
+        collapse.querySelector('input[name="base-accordion-checkbox"], input[type="checkbox"]');
+      const getAriaToggle = (collapse) =>
+        collapse.querySelector('.collapse-title [aria-expanded], .collapse-title[aria-expanded]');
+
+      function isOpen(collapse) {
+        const cb = getCheckbox(collapse);
+        if (cb) return cb.checked || collapse.classList.contains('collapse-open');
+        const ariaToggle = getAriaToggle(collapse);
+        if (ariaToggle) return ariaToggle.getAttribute('aria-expanded') === 'true';
+        return collapse.classList.contains('collapse-open');
+      }
+
+      function openCollapse(collapse) {
+        const cb = getCheckbox(collapse);
+        if (cb && !cb.checked) {
+          cb.click();
+          return;
+        }
+        const ariaToggle = getAriaToggle(collapse);
+        if (ariaToggle && ariaToggle.getAttribute('aria-expanded') !== 'true') {
+          ariaToggle.click();
+          return;
+        }
+        const title = collapse.querySelector('.collapse-title');
+        if (title) title.click();
+      }
+
       function expandAll() {
-        const list = document.getElementById('questions-list');
+        const list = getList();
         if (!list) return;
-        list.querySelectorAll('li .collapse').forEach(collapse => {
-          if (collapse.hasAttribute('data-apt-expanded')) return;
-          const cb = collapse.querySelector('input[type="checkbox"]');
-          if (cb && !cb.checked) {
-            cb.click();
-            collapse.setAttribute('data-apt-expanded', '');
-          }
+
+        list.querySelectorAll('.collapse').forEach(collapse => {
+          if (!isOpen(collapse)) openCollapse(collapse);
+          if (isOpen(collapse)) collapse.setAttribute('data-apt-expanded', '1');
+          else collapse.removeAttribute('data-apt-expanded');
         });
       }
+
       expandAll();
+      if (window._aptExpandQuestionsObs) return;
+
       const obs = new MutationObserver(() => { expandAll(); });
-      const target = document.getElementById('questions-list') || document.body;
-      obs.observe(target, { childList: true, subtree: true });
+      obs.observe(document.body, { childList: true, subtree: true });
       window._aptExpandQuestionsObs = obs;
     },
   });
