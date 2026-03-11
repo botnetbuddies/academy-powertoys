@@ -3,12 +3,24 @@
     label: 'Deduplicate API Requests',
     description: 'Prevent duplicate API calls during page load — the app fetches the same endpoints multiple times',
     scope: 'global',
-    default: true,
+    default: false,
     early: true,
+    cleanup() {
+      if (window._aptFetchDedupeInstalled && window._aptFetchDedupeOriginalFetch) {
+        window.fetch = window._aptFetchDedupeOriginalFetch;
+      }
+      delete window._aptFetchDedupeInstalled;
+      delete window._aptFetchDedupeOriginalFetch;
+    },
     run() {
+      if (window._aptFetchDedupeInstalled) return;
+
       const cache = new Map();
       const TTL = 10_000;
-      const originalFetch = window.fetch;
+      if (!window._aptFetchDedupeOriginalFetch) {
+        window._aptFetchDedupeOriginalFetch = window.fetch;
+      }
+      const originalFetch = window._aptFetchDedupeOriginalFetch;
 
       window.fetch = function (input, init) {
         const method = init?.method?.toUpperCase()
@@ -33,5 +45,6 @@
 
         return promise.then(r => r.clone());
       };
+      window._aptFetchDedupeInstalled = '1';
     },
   });

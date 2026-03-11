@@ -3,7 +3,7 @@
     label: 'Green Inline Code',
     description: 'Restore HTB green color on inline code blocks and style HTTP links blue',
     scope: 'module',
-    default: true,
+    default: false,
     cleanup() { document.getElementById('apt-green-inline-code')?.remove(); },
     run() {
       const styleId = 'apt-green-inline-code';

@@ -3,7 +3,7 @@
     label: 'Rename "Get a new Job"',
     description: 'Change the misleading "Get a new Job" heading to "Job Role Paths"',
     scope: 'dashboard',
-    default: true,
+    default: false,
     cleanup() {
       document.querySelectorAll('[data-apt-renamed-job]').forEach(el => {
         el.textContent = el.getAttribute('data-apt-renamed-job');

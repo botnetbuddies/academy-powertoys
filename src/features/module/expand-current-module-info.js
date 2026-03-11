@@ -3,7 +3,7 @@
     label: 'Expand All Sections (Module Info)',
     description: 'On module overview pages, auto-expand all syllabus sections',
     scope: 'module',
-    default: true,
+    default: false,
     cleanup() {
       if (window._aptExpandAllModuleInfoObs) {
         window._aptExpandAllModuleInfoObs.disconnect();

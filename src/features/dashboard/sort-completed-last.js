@@ -3,7 +3,7 @@
     label: 'Completed Items Last',
     description: 'Move completed modules/paths to the end in dashboard carousels and the Enrolled Path tab',
     scope: 'dashboard',
-    default: true,
+    default: false,
     run() {
       // 0 = in progress (show first), 1 = not started, 2 = completed (show last)
       function cardSortOrder(card) {

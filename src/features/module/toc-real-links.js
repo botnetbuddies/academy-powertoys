@@ -3,7 +3,7 @@
     label: 'Real Section Links',
     description: 'Make ToC and Info page real links to sections so you can ctrl+click or middle-click to open in a new tab',
     scope: 'module',
-    default: true,
+    default: false,
     run() {
       const moduleMatch = location.pathname.match(/^\/app\/module\/(\d+)(?:\/|$)/);
       if (!moduleMatch) return;
