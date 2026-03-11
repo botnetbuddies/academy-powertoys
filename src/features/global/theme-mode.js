@@ -383,10 +383,17 @@ header,footer,.navbar,.base-card{
   display: none !important;
 }
 
-*{
-  margin-inline: auto;
+.transition-all{
+  margin-inline: auto !important;;
 }
 
+#connection-panel{
+  display: none !important;;
+}
+
+main.h-full article pre[data-apt-bg-kind="shell"]{
+  --apt-terminal-bg:transparent !important;
+}
 
           `;
     }
