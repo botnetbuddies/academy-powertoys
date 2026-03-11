@@ -392,6 +392,13 @@ a.tab-item.selected{
   background-color: lightgreen;
   color: black;
 }
+
+.tab-item.whitespace-nowrap.flex.flex-col.items-center.gap-1.p-4.tabs-bordered.tabs-inline.tabs-selected.tab-active.peer{
+  color: green !important;;
+}
+  #hint-modal h3.modal-title{
+  color: black !important;;
+}
         `;
     } else if (mode === "print") {
       style.textContent = `
