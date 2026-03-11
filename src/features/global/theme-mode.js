@@ -407,6 +407,15 @@ a.tab-item.selected{
   #hint-modal h3.modal-title{
   color: black !important;;
 }
+
+.bg-htb-layer-background.rounded-lg .base-card .base-card button[class-name="bg-secondary"]{
+  color: black !important;
+}
+.bg-htb-layer-background.rounded-lg .base-card .base-card button[class-name="bg-secondary"]:hover{
+  background-color: lightgreen !important;
+}
+
+
         `;
     } else if (mode === "print") {
       style.textContent = `
