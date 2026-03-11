@@ -1,36 +1,38 @@
-  registerFeature({
-    id: 'theme-mode',
-    label: 'Theme (Broken, being worked on)',
-    description: 'Switch between Default (dark), Light, or Print-friendly theme',
-    scope: 'global',
-    default: false,
-    settings: {
-      mode: 'default', // 'default' | 'light' | 'print'
-    },
-    settingsUI: {
-      type: 'select',
-      key: 'mode',
-      disableValue: 'default',
-      options: [
-        { value: 'default', label: 'Default (Dark)' },
-        { value: 'light', label: 'Light' },
-        { value: 'print', label: 'Print' },
-      ],
-    },
-    cleanup() { document.getElementById('apt-theme-mode')?.remove(); },
-    run(cfg) {
-      const mode = cfg.mode || 'default';
-      if (mode === 'default') return;
+registerFeature({
+  id: "theme-mode",
+  label: "Theme (Broken, being worked on)",
+  description: "Switch between Default (dark), Light, or Print-friendly theme",
+  scope: "global",
+  default: false,
+  settings: {
+    mode: "default", // 'default' | 'light' | 'print'
+  },
+  settingsUI: {
+    type: "select",
+    key: "mode",
+    disableValue: "default",
+    options: [
+      { value: "default", label: "Default (Dark)" },
+      { value: "light", label: "Light" },
+      { value: "print", label: "Print" },
+    ],
+  },
+  cleanup() {
+    document.getElementById("apt-theme-mode")?.remove();
+  },
+  run(cfg) {
+    const mode = cfg.mode || "default";
+    if (mode === "default") return;
 
-      const styleId = 'apt-theme-mode';
-      const existing = document.getElementById(styleId);
-      if (existing) existing.remove();
+    const styleId = "apt-theme-mode";
+    const existing = document.getElementById(styleId);
+    if (existing) existing.remove();
 
-      const style = document.createElement('style');
-      style.id = styleId;
+    const style = document.createElement("style");
+    style.id = styleId;
 
-      if (mode === 'light') {
-        style.textContent = `
+    if (mode === "light") {
+      style.textContent = `
           /* ── Light Theme (Grey-Blue) ── */
 
           /* Main backgrounds — grey-blue tones */
@@ -138,9 +140,179 @@
           #apt-settings-panel .apt-scope-title { color: #9fef00 !important; }
           #apt-settings-panel .apt-feature-row:hover { background: #22223a !important; }
           #apt-settings-panel .apt-select { background: #22223a !important; color: #e0e0e0 !important; border-color: #3a3a5a !important; }
+
+
+          :root{
+  --color-neutral-400: #b8c4d3;
+  --color-neutral-600: #d7f5d3;
+  --color-neutral-700: lightgreen ;
+  --color-neutral-850: #e4eaf1;
+
+}
+
+.htb-square-button--ghost-icon-secondary:hover{
+  background-color: var(--color-neutral-400);
+  color:black !important;;
+  fill: black !important;
+}
+
+.htb-square-button--ghost-icon-secondary--selected{
+  background-color: lightgreen;
+  color: black;
+}
+
+.htb-square-button.htb-square-button--ghost-icon-secondary.htb-square-button--medium{
+  color: black !important;
+}
+
+header .flex.items-center path{
+  fill: black !important;
+  color: black !important;
+  fill: black !important;
+}
+
+.htb-square-button--disabled{
+  background-color: lightgreen !important;
+}
+
+.toast-title{
+  color: black !important;;
+}
+
+.base-card{
+  color: #404040;
+}
+
+
+.tabs-pill-selected{
+  background: green !important;;
+
+}
+
+[title='Library']{
+  background: transparent !important;
+}
+
+[title='Dashboard']{
+  background: transparent !important;
+}
+
+.modal-backdrop{
+  background-color: #e4eaf1;
+}
+
+
+.p-inputtext,.p-inputtext:active{
+  background-color: #e4eaf1;
+  border: 1px solid black !important;;
+  color: black !important;
+}
+
+
+[data-pc-name="inputicon"] .htb-icon-primary-fill{
+  fill: black !important;;
+}
+
+#search-modal .modal-content .flex{
+  color: green !important;
+}
+
+ul.base-list div{
+  color: black;
+}
+
+a[href="/app/library/modules"]{
+  color: green;
+}
+
+a[href="/app/library/paths"]{
+  color: green;
+}
+
+a[href="/app/library/modules?state=in_progress"]{
+  color: green;
+}
+
+.htb-square-button--secondary:hover, .htb-square-button--secondary{
+   background-color: lightgreen;
+  color: black;
+}
+
+.bg-\[url\(\'\/streaks\/streak-card-bg\.svg\'\)\] {
+    background-image: none;
+}
+
+
+.clipped-bg::after, .clipped-bg::before{
+  content:none !important;;
+}
+
+.notification{
+  background: transparent;
+  color: black;
+}
+
+#questions-list input{
+  color: black !important;;
+}
+
+.bg-blue-1000{
+  background: transparent;
+}
+
+footer .htb-button--outlined{
+  color: black;
+}
+
+footer .htb-button--outlined:hover{
+  color: black;
+  background: lightgreen;
+}
+
+#Cheatsheet-modal h3.modal-title{
+  color: black;
+}
+
+.text-success{
+  color: green;
+}
+
+.htb-button--ghost-secondary:has(svg.prepend-icon):hover , .htb-button--ghost-secondary:has(svg.prepend-icon){
+  background-color: transparent;
+  color: black;
+}
+
+textarea[name="note-textarea"]{
+  color: black;
+}
+
+::selection {
+  color: black;
+  background-color: lightgreen; 
+}
+
+code.bg-neutral-700{
+  background: transparent !important;
+}
+
+a[href="#compare-plans"]{
+  background-color: green;
+}
+
+a.tab-item.selected{
+  background-color: green;
+}
+
+.module-header-title{
+  color: black !important;;
+}
+
+.module-active .htb-button--ghost{
+  color: green !important;
+}
         `;
-      } else if (mode === 'print') {
-        style.textContent = `
+    } else if (mode === "print") {
+      style.textContent = `
           /* ── Print Theme ── */
 
           /* Strip all dark backgrounds to white */
@@ -206,9 +378,19 @@
           #apt-settings-panel .apt-feature-desc { color: #888 !important; }
           #apt-settings-panel .apt-scope-title { color: #9fef00 !important; }
           #apt-settings-panel .apt-select { background: #22223a !important; color: #e0e0e0 !important; border-color: #3a3a5a !important; }
-        `;
-      }
+       
+header,footer,.navbar,.base-card{
+  display: none !important;
+}
 
-      document.head.appendChild(style);
-    },
-  });
+*{
+  margin-inline: auto;
+}
+
+
+          `;
+    }
+
+    document.head.appendChild(style);
+  },
+});
