@@ -3,7 +3,7 @@
     label: 'Slim Bottom Bar',
     description: 'Reduce padding on the Previous / Next navigation bar',
     scope: 'module',
-    default: true,
+    default: false,
     settings: {
       paddingX: '1rem',
       paddingY: '0.125rem',

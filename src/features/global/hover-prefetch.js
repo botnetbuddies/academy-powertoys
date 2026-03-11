@@ -3,7 +3,7 @@
     label: 'Prefetch on Hover',
     description: 'Prefetch section API data on hover to speed up SPA navigation',
     scope: 'global',
-    default: true,
+    default: false,
     cleanup() {
       if (window._aptPrefetchHandler) {
         document.removeEventListener('mouseover', window._aptPrefetchHandler.onEnter);

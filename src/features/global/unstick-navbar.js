@@ -3,7 +3,7 @@
     label: 'Non-Sticky Nav Bar',
     description: 'Make the top navigation bar scroll with the page instead of staying fixed',
     scope: 'global',
-    default: true,
+    default: false,
     cleanup() { document.getElementById('apt-unstick-navbar')?.remove(); },
     run() {
       const styleId = 'apt-unstick-navbar';

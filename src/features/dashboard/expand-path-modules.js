@@ -3,7 +3,7 @@
     label: 'Expand Path Module List',
     description: 'Remove the scroll limit on the Enrolled Path modules list',
     scope: 'dashboard',
-    default: true,
+    default: false,
     cleanup() { document.getElementById('apt-expand-path-modules')?.remove(); },
     run() {
       const styleId = 'apt-expand-path-modules';

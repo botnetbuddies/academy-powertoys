@@ -3,7 +3,7 @@
     label: 'Hide Step-by-Step Solutions PRO',
     description: 'Remove the "Enable step-by-step solutions" PRO upsell banner',
     scope: 'module',
-    default: true,
+    default: false,
     cleanup() {
       if (window._aptHidePromoObs) { window._aptHidePromoObs.disconnect(); delete window._aptHidePromoObs; }
       document.querySelectorAll('[data-apt-hidden-promo]').forEach(el => {

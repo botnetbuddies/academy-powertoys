@@ -3,7 +3,7 @@
     label: 'Static Bottom Bar',
     description: 'Move the Previous/Next bar to the page bottom instead of floating over content',
     scope: 'module',
-    default: true,
+    default: false,
     cleanup() { document.getElementById('apt-static-bottom-bar')?.remove(); },
     run() {
       const styleId = 'apt-static-bottom-bar';

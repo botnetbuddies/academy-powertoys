@@ -77,12 +77,29 @@
           padding: 16px 24px; border-top: 1px solid #2a2a4a;
           display: flex; justify-content: space-between; align-items: center;
           position: sticky; bottom: 0; background: #1a1a2e;
+          gap: 12px;
         }
-        .apt-footer-note { font-size: 11px; color: #666; }
+        .apt-footer-note {
+          font-size: 13px;
+          color: #b9c2d0;
+          font-weight: 600;
+          letter-spacing: 0.1px;
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .apt-footer-note .apt-reload-star {
+          color: #9fef00;
+          font-weight: 900;
+          font-size: 15px;
+          margin-right: 4px;
+          vertical-align: -1px;
+        }
         .apt-reload-btn {
           background: #9fef00; color: #1a1a2e; border: none;
           padding: 8px 18px; border-radius: 6px; font-size: 13px;
           font-weight: 600; cursor: pointer; transition: all 0.15s;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
         .apt-reload-btn:hover { background: #b5ff33; }
         .apt-empty { color: #555; font-size: 13px; padding: 8px 12px; font-style: italic; }
@@ -100,7 +117,7 @@
         </div>
         <div id="apt-settings-body"></div>
         <div class="apt-footer">
-          <span class="apt-footer-note">Changes apply on reload</span>
+          <span class="apt-footer-note"><span class="apt-reload-star">*</span> Marked features require a full reload to change</span>
           <button class="apt-reload-btn">Save &amp; Reload</button>
         </div>
       </div>
@@ -116,6 +133,13 @@
       { key: 'dashboard', label: 'Dashboard', badge: '/app/dashboard' },
       { key: 'module', label: 'Module', badge: '/app/module/*' },
     ];
+
+    function isHotReloadable(feat) {
+      if (feat.hotReload === true) return true;
+      if (feat.hotReload === false) return false;
+      if (feat.early) return false;
+      return typeof feat.cleanup === 'function';
+    }
 
     for (const scope of scopes) {
       const scopeFeatures = features.filter(f => f.scope === scope.key);
@@ -134,6 +158,7 @@
 
       for (const feat of scopeFeatures) {
         const enabled = getFeatureEnabled(feat.id);
+        const label = isHotReloadable(feat) ? feat.label : `${feat.label} *`;
         const row = document.createElement('div');
         row.className = 'apt-feature-row';
         if (feat.settingsUI && feat.settingsUI.type === 'select') {
@@ -145,7 +170,7 @@
           ).join('');
           row.innerHTML = `
             <div class="apt-feature-info">
-              <div class="apt-feature-label">${feat.label}</div>
+              <div class="apt-feature-label">${label}</div>
               <div class="apt-feature-desc">${feat.description}</div>
             </div>
             <select class="apt-select" data-feature-select-id="${feat.id}" data-select-key="${ui.key}" data-disable-value="${ui.disableValue}">
@@ -155,7 +180,7 @@
         } else {
           row.innerHTML = `
             <div class="apt-feature-info">
-              <div class="apt-feature-label">${feat.label}</div>
+              <div class="apt-feature-label">${label}</div>
               <div class="apt-feature-desc">${feat.description}</div>
             </div>
             <label class="apt-toggle">
@@ -175,7 +200,7 @@
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
     function hotToggle(feat, enabled) {
-      if (!feat.cleanup) return; // needs reload
+      if (!isHotReloadable(feat)) return;
       if (enabled) {
         applyFeature(feat);
       } else {
@@ -205,7 +230,7 @@
           setFeatureEnabled(id, true);
           setFeatureSetting(id, key, value);
           // Re-run with new settings: cleanup first, then apply
-          if (feat && feat.cleanup) {
+          if (feat && isHotReloadable(feat)) {
             cleanupFeature(feat);
             applyFeature(feat);
           }

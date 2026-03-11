@@ -3,7 +3,7 @@
     label: 'Theme (Broken, being worked on)',
     description: 'Switch between Default (dark), Light, or Print-friendly theme',
     scope: 'global',
-    default: true,
+    default: false,
     settings: {
       mode: 'default', // 'default' | 'light' | 'print'
     },

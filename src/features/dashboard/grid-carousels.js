@@ -3,7 +3,7 @@
     label: 'Grid Module Carousels',
     description: 'Convert Modules In Progress and Favourite Modules from carousels to a grid layout',
     scope: 'dashboard',
-    default: true,
+    default: false,
     cleanup() {
       document.getElementById('apt-grid-carousels')?.remove();
       if (window._aptGridCarouselsObs) { window._aptGridCarouselsObs.disconnect(); delete window._aptGridCarouselsObs; }

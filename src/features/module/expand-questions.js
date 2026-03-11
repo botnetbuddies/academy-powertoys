@@ -3,7 +3,7 @@
     label: 'Expand All Questions',
     description: 'Auto-expand all question accordions on module pages',
     scope: 'module',
-    default: true,
+    default: false,
     cleanup() {
       if (window._aptExpandQuestionsObs) { window._aptExpandQuestionsObs.disconnect(); delete window._aptExpandQuestionsObs; }
       document.querySelectorAll('#questions-list [data-apt-expanded]').forEach(el => {

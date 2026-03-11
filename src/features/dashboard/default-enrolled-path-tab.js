@@ -3,7 +3,7 @@
     label: 'Default Dashboard Tab',
     description: 'Choose which dashboard tab should open by default: Exam Progress, Enrolled Path, or Modules in Progress',
     scope: 'dashboard',
-    default: true,
+    default: false,
     settings: {
       defaultTab: 'enrolled-path', // 'exam-progress' | 'enrolled-path' | 'modules-in-progress'
     },

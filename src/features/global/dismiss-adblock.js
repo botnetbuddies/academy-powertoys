@@ -3,7 +3,7 @@
     label: 'Dismiss Ad-Blocker Modal',
     description: 'Auto-dismiss the "Ad Blocker Detected" popup',
     scope: 'global',
-    default: true,
+    default: false,
     run() {
       const modal = document.querySelector('#adblockModal');
       if (modal) {

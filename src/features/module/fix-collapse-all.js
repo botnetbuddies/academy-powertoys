@@ -3,9 +3,32 @@
     label: 'Fix Collapse/Expand All Sections',
     description: 'Fix the broken "Collapse all sections" / "Expand all sections" toggle on module info pages',
     scope: 'module',
-    default: true,
+    default: false,
+    cleanup() {
+      if (window._aptFixCollapseAllClickHandler) {
+        document.removeEventListener('click', window._aptFixCollapseAllClickHandler, true);
+        delete window._aptFixCollapseAllClickHandler;
+      }
+      if (window._aptFixCollapseAllInitObs) {
+        window._aptFixCollapseAllInitObs.disconnect();
+        delete window._aptFixCollapseAllInitObs;
+      }
+      delete window._aptFixCollapseAllActivePath;
+      delete window._aptToggleAllSections;
+      delete window._aptCollapseAllSync;
+    },
     run() {
       if (!/^\/app\/module\/\d+\/?$/.test(location.pathname)) return;
+      if (window._aptFixCollapseAllActivePath === location.pathname) return;
+
+      // If this feature was already wired for another route instance, reset first.
+      if (window._aptFixCollapseAllClickHandler) {
+        document.removeEventListener('click', window._aptFixCollapseAllClickHandler, true);
+      }
+      if (window._aptFixCollapseAllInitObs) {
+        window._aptFixCollapseAllInitObs.disconnect();
+        delete window._aptFixCollapseAllInitObs;
+      }
 
       function getCheckbox(collapse) {
         return collapse.querySelector('input[name="base-accordion-checkbox"], input[type="checkbox"]');
@@ -18,7 +41,7 @@
 
       // Use document-level capture listener so it fires before anything else
       // and survives Vue re-renders
-      document.addEventListener('click', function(e) {
+      const clickHandler = function(e) {
         const link = e.target.closest('.module-sections .link-secondary-htb');
         if (!link) return;
         if (!/collapse|expand/i.test(link.textContent)) return;
@@ -44,7 +67,10 @@
         });
 
         link.textContent = wantsCollapse ? 'Expand all sections' : 'Collapse all sections';
-      }, true);
+      };
+      document.addEventListener('click', clickHandler, true);
+      window._aptFixCollapseAllClickHandler = clickHandler;
+      window._aptFixCollapseAllActivePath = location.pathname;
 
       // Sync button text on init + expose helpers
       let inited = false;
@@ -96,10 +122,21 @@
 
       if (!tryInit()) {
         const obs = new MutationObserver((_, o) => {
-          if (tryInit()) o.disconnect();
+          if (tryInit()) {
+            o.disconnect();
+            if (window._aptFixCollapseAllInitObs === obs) {
+              delete window._aptFixCollapseAllInitObs;
+            }
+          }
         });
         obs.observe(document.body, { childList: true, subtree: true });
-        setTimeout(() => obs.disconnect(), 10000);
+        window._aptFixCollapseAllInitObs = obs;
+        setTimeout(() => {
+          if (window._aptFixCollapseAllInitObs === obs) {
+            obs.disconnect();
+            delete window._aptFixCollapseAllInitObs;
+          }
+        }, 10000);
       }
     },
   });
