@@ -247,6 +247,15 @@ a[href*="tab=favourites"]{
   background-image: none !important;
 }
 
+.bg-\[url\(\'\/streaks\/streak-card-bg\.svg\'\)\]{
+  background-image: none !important;
+}
+
+
+.bg-bottom-left.bg-no-repeat.pb-8.border-secondary-disabled.border.rounded-bl-lg.rounded-br-lg{
+  background-image: none !important;
+}
+
 .clipped-bg::after, .clipped-bg::before{
   content:none !important;;
 }
