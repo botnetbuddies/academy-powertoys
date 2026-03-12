@@ -264,6 +264,14 @@ button.keep-reading{
   color: black !important;
 }
 
+.base-card.card-row.card-row-compact-container .htb-icon-button *{
+  color: black !important;  
+}
+
+.base-card.card-row.card-row-compact-container .htb-icon-button:hover:enabled{
+  background-color: lightgreen !important;;
+}
+
 #questions-list input{
   color: black !important;;
 }
