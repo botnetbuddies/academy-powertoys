@@ -1,11 +1,11 @@
 registerFeature({
   id: "theme-mode",
-  label: "Theme (Broken, being worked on)",
-  description: "Switch between Default (dark), Light, or Print-friendly theme",
+  label: "Theme (Might have small issues)",
+  description: "Switch between Default (dark) or Light",
   scope: "global",
   default: false,
   settings: {
-    mode: "default", // 'default' | 'light' | 'print'
+    mode: "default", // 'default' | 'light' | 'print'(disabled for now)
   },
   settingsUI: {
     type: "select",
@@ -14,7 +14,7 @@ registerFeature({
     options: [
       { value: "default", label: "Default (Dark)" },
       { value: "light", label: "Light" },
-      { value: "print", label: "Print" },
+      // { value: "print", label: "Print" },
     ],
   },
   cleanup() {
@@ -233,23 +233,43 @@ a[href="/app/library/modules?state=in_progress"]{
   color: green;
 }
 
+a[href*="tab=favourites"]{
+  color: green !important;
+}
+
 .htb-square-button--secondary:hover, .htb-square-button--secondary{
    background-color: lightgreen;
   color: black;
 }
 
-.bg-\[url\(\'\/streaks\/streak-card-bg\.svg\'\)\] {
-    background-image: none;
+
+.bg-\[url\(\'\/streaks\/streak-card-bg\.svg\'\)\]{
+  background-image: none !important;
 }
 
+.bg-\[url\(\'\/streaks\/streak-card-bg\.svg\'\)\]{
+  background-image: none !important;
+}
+
+
+.bg-bottom-left.bg-no-repeat.pb-8.border-secondary-disabled.border.rounded-bl-lg.rounded-br-lg{
+  background-image: none !important;
+}
 
 .clipped-bg::after, .clipped-bg::before{
   content:none !important;;
 }
 
-.notification{
-  background: transparent;
-  color: black;
+button.keep-reading{
+  color: black !important;
+}
+
+.base-card.card-row.card-row-compact-container .htb-icon-button *{
+  color: black !important;  
+}
+
+.base-card.card-row.card-row-compact-container .htb-icon-button:hover:enabled{
+  background-color: lightgreen !important;;
 }
 
 #questions-list input{
@@ -281,6 +301,14 @@ footer .htb-button--outlined:hover{
   background-color: transparent;
   color: black;
 }
+  
+.htb-button--ghost-secondary{
+  color: black !important;;
+}
+
+.htb-button--ghost-secondary:hover{
+  background-color: lightgreen !important;;
+}
 
 textarea[name="note-textarea"]{
   color: black;
@@ -310,6 +338,103 @@ a.tab-item.selected{
 .module-active .htb-button--ghost{
   color: green !important;
 }
+  /* outlined buttons */
+.htb-button.htb-button--outlined{
+  color: black;
+  border-color: black;
+}
+
+.htb-button.htb-button--outlined:hover{
+  background: lightgreen;
+}
+
+/* ghost buttons */
+.htb-button.htb-button--ghost{
+  color: green;
+}
+
+.htb-button.htb-button--ghost:hover{
+  background-color: lightgreen;
+}
+
+
+
+
+.module-header-tag-name{
+  color: black !important;
+}
+.htb-text-primary{
+  color: black !important;;
+}
+
+
+
+.feature-item  *{
+  color: black !important;
+}
+
+.feature-icon .htb-icon-secondary-fill{
+  fill: black;
+}
+
+.rating-card-description{
+  color: gray;
+}
+
+.base-list li *{
+  color: black !important;;
+}
+
+.dropdown *{
+  color: black;
+}
+
+.path-header *{
+  color: black;
+}
+
+.path-header .progress{
+  color: green !important;
+}
+
+.module-header p {
+  color: black !important;
+}
+
+#module-review-modal *{
+  color: black !important;
+}
+
+.mockup-browser{
+  background-color: transparent;
+  border: 2px solid;
+}
+
+.mockup-browser .bg-base-300{
+  background: transparent;
+  padding: 0px;
+}
+
+.mockup-browser .input{
+  background-color: lightgreen;
+  color: black;
+}
+
+.tab-item.whitespace-nowrap.flex.flex-col.items-center.gap-1.p-4.tabs-bordered.tabs-inline.tabs-selected.tab-active.peer{
+  color: green !important;;
+}
+  #hint-modal h3.modal-title{
+  color: black !important;;
+}
+
+.bg-htb-layer-background.rounded-lg .base-card .base-card button[class-name="bg-secondary"]{
+  color: black !important;
+}
+.bg-htb-layer-background.rounded-lg .base-card .base-card button[class-name="bg-secondary"]:hover{
+  background-color: lightgreen !important;
+}
+
+
         `;
     } else if (mode === "print") {
       style.textContent = `
@@ -383,10 +508,17 @@ header,footer,.navbar,.base-card{
   display: none !important;
 }
 
-*{
-  margin-inline: auto;
+.transition-all{
+  margin-inline: auto !important;;
 }
 
+#connection-panel{
+  display: none !important;;
+}
+
+main.h-full article pre[data-apt-bg-kind="shell"]{
+  --apt-terminal-bg:transparent !important;
+}
 
           `;
     }
