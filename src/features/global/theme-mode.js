@@ -260,7 +260,9 @@ a[href*="tab=favourites"]{
   content:none !important;;
 }
 
-
+button.keep-reading{
+  color: black !important;
+}
 
 #questions-list input{
   color: black !important;;
