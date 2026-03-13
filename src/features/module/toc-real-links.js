@@ -10,6 +10,11 @@
       const moduleId = moduleMatch[1];
       const currentSectionMatch = location.pathname.match(/\/section\/(\d+)(?:\/|$)/);
       const currentSectionId = currentSectionMatch ? Number(currentSectionMatch[1]) : null;
+      const payloadCache = window._aptTocSectionsPayloadCache
+        || (window._aptTocSectionsPayloadCache = new Map());
+      const inflightPayloadCache = window._aptTocSectionsPayloadInFlight
+        || (window._aptTocSectionsPayloadInFlight = new Map());
+      const PAYLOAD_CACHE_TTL_MS = 2 * 60_000;
 
       const rows = [...document.querySelectorAll('.base-row[page]')];
 
@@ -403,6 +408,15 @@
       }
 
       function fetchSectionsPayload() {
+        const cacheKey = String(moduleId);
+        const cached = payloadCache.get(cacheKey);
+        if (cached && (Date.now() - cached.time) <= PAYLOAD_CACHE_TTL_MS) {
+          return Promise.resolve(cached.payload);
+        }
+
+        const inflight = inflightPayloadCache.get(cacheKey);
+        if (inflight) return inflight;
+
         const endpoints = [
           `/api/v3/modules/${moduleId}/sections`,
           `/api/v4/modules/${moduleId}/sections`,
@@ -425,7 +439,22 @@
             .catch(() => next());
         }
 
-        return next();
+        const req = next()
+          .then((payload) => {
+            payloadCache.set(cacheKey, { payload, time: Date.now() });
+            while (payloadCache.size > 20) {
+              const oldestKey = payloadCache.keys().next().value;
+              if (!oldestKey) break;
+              payloadCache.delete(oldestKey);
+            }
+            return payload;
+          })
+          .finally(() => {
+            inflightPayloadCache.delete(cacheKey);
+          });
+
+        inflightPayloadCache.set(cacheKey, req);
+        return req;
       }
 
       function reconcileMapToVisibleRows(idMap) {
@@ -468,74 +497,83 @@
         return remapped;
       }
 
-      // Fetch sections API to map page numbers → section IDs
-      fetchSectionsPayload()
-        .then(payload => {
-          const offsetMap = buildOffsetIdMap();
-          if (!payload) {
-            assignModuleInfoRowIds([], offsetMap);
-            linkModuleInfoSectionTitles(offsetMap);
-            linkRows(offsetMap);
-            return;
-          }
-          const metas = payload.metas || [];
-          const idMap = new Map();
-          for (const s of metas) {
-            const { key, sectionId } = s;
-            if (key != null && sectionId != null) idMap.set(String(key), String(sectionId));
-          }
-          if (idMap.size === 0) {
-            metas.forEach((s, i) => {
-              const { sectionId } = s;
-              if (sectionId != null) idMap.set(String(i + 1), String(sectionId));
-            });
-          }
-          let finalMap = idMap.size > 0 ? idMap : null;
-
-          const activePage = getActivePageNumber();
-          if (finalMap && Number.isFinite(currentSectionId) && Number.isFinite(activePage)) {
-            const mappedActive = Number(finalMap.get(String(activePage)));
-            // If API-derived mapping disagrees with the currently opened section, trust the offset mapping.
-            if (!Number.isFinite(mappedActive) || mappedActive !== currentSectionId) {
-              finalMap = offsetMap || null;
+      function hydrateLinksFromPayload() {
+        // Fetch sections API to map page numbers → section IDs.
+        fetchSectionsPayload()
+          .then(payload => {
+            const offsetMap = buildOffsetIdMap();
+            if (!payload) {
+              assignModuleInfoRowIds([], offsetMap);
+              linkModuleInfoSectionTitles(offsetMap);
+              linkRows(offsetMap);
+              return;
             }
-          }
+            const metas = payload.metas || [];
+            const idMap = new Map();
+            for (const s of metas) {
+              const { key, sectionId } = s;
+              if (key != null && sectionId != null) idMap.set(String(key), String(sectionId));
+            }
+            if (idMap.size === 0) {
+              metas.forEach((s, i) => {
+                const { sectionId } = s;
+                if (sectionId != null) idMap.set(String(i + 1), String(sectionId));
+              });
+            }
+            let finalMap = idMap.size > 0 ? idMap : null;
 
-          if (finalMap && offsetMap) {
+            const activePage = getActivePageNumber();
+            if (finalMap && Number.isFinite(currentSectionId) && Number.isFinite(activePage)) {
+              const mappedActive = Number(finalMap.get(String(activePage)));
+              // If API-derived mapping disagrees with the currently opened section, trust the offset mapping.
+              if (!Number.isFinite(mappedActive) || mappedActive !== currentSectionId) {
+                finalMap = offsetMap || null;
+              }
+            }
+
+            if (finalMap && offsetMap) {
+              for (const row of rows) {
+                const pageNum = row.getAttribute('page');
+                if (!pageNum || finalMap.has(pageNum)) continue;
+                const offsetId = offsetMap.get(pageNum);
+                if (offsetId) finalMap.set(pageNum, offsetId);
+              }
+            }
+
+            let navMap = finalMap || offsetMap || (idMap.size > 0 ? idMap : null);
+            navMap = reconcileMapToVisibleRows(navMap);
+            assignModuleInfoRowIds(metas, navMap);
+
+            // Promote row-resolved IDs into nav map so link builders always prefer real IDs.
+            const rowResolvedMap = new Map();
             for (const row of rows) {
-              const pageNum = row.getAttribute('page');
-              if (!pageNum || finalMap.has(pageNum)) continue;
-              const offsetId = offsetMap.get(pageNum);
-              if (offsetId) finalMap.set(pageNum, offsetId);
+              const page = row.getAttribute('page');
+              const sid = row.dataset.aptSectionId;
+              if (page && sid) rowResolvedMap.set(String(page), String(sid));
             }
-          }
-
-          let navMap = finalMap || offsetMap || (idMap.size > 0 ? idMap : null);
-          navMap = reconcileMapToVisibleRows(navMap);
-          assignModuleInfoRowIds(metas, navMap);
-
-          // Promote row-resolved IDs into nav map so link builders always prefer real IDs.
-          const rowResolvedMap = new Map();
-          for (const row of rows) {
-            const page = row.getAttribute('page');
-            const sid = row.dataset.aptSectionId;
-            if (page && sid) rowResolvedMap.set(String(page), String(sid));
-          }
-          if (rowResolvedMap.size > 0) {
-            if (!navMap) navMap = new Map();
-            for (const [page, sid] of rowResolvedMap) {
-              navMap.set(page, sid);
+            if (rowResolvedMap.size > 0) {
+              if (!navMap) navMap = new Map();
+              for (const [page, sid] of rowResolvedMap) {
+                navMap.set(page, sid);
+              }
             }
-          }
 
-          linkModuleInfoSectionTitles(navMap);
-          linkRows(navMap);
-        })
-        .catch(() => {
-          const fallbackMap = buildOffsetIdMap();
-          assignModuleInfoRowIds([], fallbackMap);
-          linkModuleInfoSectionTitles(fallbackMap);
-          linkRows(fallbackMap);
-        });
+            linkModuleInfoSectionTitles(navMap);
+            linkRows(navMap);
+          })
+          .catch(() => {
+            const fallbackMap = buildOffsetIdMap();
+            assignModuleInfoRowIds([], fallbackMap);
+            linkModuleInfoSectionTitles(fallbackMap);
+            linkRows(fallbackMap);
+          });
+      }
+
+      // Keep this work off the critical path; links are enhanced shortly after first paint.
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(hydrateLinksFromPayload, { timeout: 1200 });
+      } else {
+        setTimeout(hydrateLinksFromPayload, 250);
+      }
     },
   });

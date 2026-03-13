@@ -1,7 +1,7 @@
   registerFeature({
     id: 'block-telemetry',
     label: 'Block Telemetry & Analytics',
-    description: 'Block Cookiebot, Appcues, Hotjar, Sentry, Cloudflare Insights, and Google Analytics requests',
+    description: 'Block Cookiebot, Appcues, Hotjar, Sentry, Intercom, Segment, Cloudflare Insights, and Google Analytics requests',
     scope: 'global',
     default: false,
     early: true,
@@ -15,15 +15,43 @@
         'appcues.com',
         'hotjar.com',
         'sentry.hackthebox.eu',
+        'ingest.sentry.hackthebox.eu',
         'cloudflareinsights.com',
         'googletagmanager.com',
         'fygapokei.hackthebox.com',
+        'intercom.io',
+        'intercomcdn.com',
+        'segment.com',
+      ];
+
+      // Same-origin analytics paths (proxied through academy.hackthebox.com)
+      const blockedPaths = [
+        '/i/o/',           // adsctp tracking pixels
+        '/1/i/',           // adsctp alternate path
+        '/v1/i',           // Intercom tracking
+        '/wa/',            // web analytics
+        '/g/collect',      // Google Analytics proxy
+        '/gtag/',          // Google tag manager
+        '/cdn-cgi/rum',    // Cloudflare RUM
+        '/api/30/',        // Sentry envelope
+        '/htb-anal.js',    // HTB analytics bundle (576KB!)
+        '/beacon.min.js',  // beacon tracking script
+        '/af/',            // tracking/fingerprint
+        '/213301.js',      // Appcues/telemetry loader
+        '/v1/projects/',   // Sentry project settings/DSN
+        '/li.lms-analytics/', // LinkedIn insight tag
+        '/uwt.js',         // Twitter ads
+        '/analytics.js',   // Segment analytics
+        '/collect?',       // LinkedIn pixel collect
       ];
 
       function isBlocked(url) {
         try {
-          const host = new URL(url, location.origin).hostname;
-          return blockedHosts.some(h => host === h || host.endsWith('.' + h));
+          const parsed = new URL(url, location.origin);
+          if (blockedHosts.some(h => parsed.hostname === h || parsed.hostname.endsWith('.' + h))) return true;
+          // Block same-origin analytics paths
+          if (parsed.origin === location.origin && blockedPaths.some(p => parsed.pathname.startsWith(p))) return true;
+          return false;
         } catch { return false; }
       }
 
@@ -37,7 +65,7 @@
       // For blocked XHRs, call open() with a data: URI so the object stays in a
       // valid state, then have send() fire error/loadend so callers don't hang.
       const origOpen = XMLHttpRequest.prototype.open;
-      XMLHttpRequest.prototype.open = function(method, url) {
+      XMLHttpRequest.prototype.open = function(_method, url) {
         this._aptBlocked = isBlocked(String(url));
         if (this._aptBlocked) return origOpen.call(this, 'GET', 'data:text/plain,');
         return origOpen.apply(this, arguments);
@@ -73,5 +101,41 @@
         if (node.tagName === 'IMG' && node.src && isBlocked(node.src)) return node;
         return origInsertBefore.call(this, node, ref);
       };
+
+      // Intercept tracking pixels set via new Image().src = url
+      const imgProto = HTMLImageElement.prototype;
+      const srcDesc = Object.getOwnPropertyDescriptor(imgProto, 'src');
+      if (srcDesc?.configurable && srcDesc.set) {
+        Object.defineProperty(imgProto, 'src', {
+          configurable: true,
+          enumerable: srcDesc.enumerable,
+          get() { return srcDesc.get.call(this); },
+          set(value) {
+            if (isBlocked(value)) return;
+            srcDesc.set.call(this, value);
+          },
+        });
+      }
+
+      const origImgSetAttr = imgProto.setAttribute;
+      imgProto.setAttribute = function(name, value) {
+        if (String(name).toLowerCase() === 'src' && isBlocked(value)) return;
+        return origImgSetAttr.apply(this, arguments);
+      };
+
+      // Intercept script src too (inline analytics loaders)
+      const scriptProto = HTMLScriptElement.prototype;
+      const scriptSrcDesc = Object.getOwnPropertyDescriptor(scriptProto, 'src');
+      if (scriptSrcDesc?.configurable && scriptSrcDesc.set) {
+        Object.defineProperty(scriptProto, 'src', {
+          configurable: true,
+          enumerable: scriptSrcDesc.enumerable,
+          get() { return scriptSrcDesc.get.call(this); },
+          set(value) {
+            if (isBlocked(value)) return;
+            scriptSrcDesc.set.call(this, value);
+          },
+        });
+      }
     },
   });

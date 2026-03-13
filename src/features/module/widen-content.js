@@ -1,7 +1,7 @@
   registerFeature({
     id: 'widen-content',
     label: 'Widen Content Area',
-    description: 'Expand the main content and text columns for more reading space',
+    description: 'Expand the main content column and resize the TOC sidebar for more reading space',
     scope: 'module',
     default: true,
     settings: {
@@ -9,6 +9,9 @@
       textWidth: '75%',
       textWidthLg: '80%',
       textWidthXl: '83.333%',
+      tocWidth: '20%',
+      tocMinWidth: '280px',
+      tocPadding: '1rem',
     },
     cleanup() { document.getElementById('apt-widen-content')?.remove(); },
     run(cfg) {
@@ -33,6 +36,14 @@
           main.h-full > section > div > div {
             width: ${cfg.textWidthXl} !important;
           }
+        }
+        main.h-full > section > div > div:last-child:has(h3) {
+          width: ${cfg.tocWidth} !important;
+          min-width: ${cfg.tocMinWidth};
+        }
+        main.h-full > section > div > div:last-child:has(h3) .base-card {
+          padding-left: ${cfg.tocPadding} !important;
+          padding-right: ${cfg.tocPadding} !important;
         }
       `;
       document.head.appendChild(style);

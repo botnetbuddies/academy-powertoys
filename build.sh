@@ -32,16 +32,19 @@ FILES=(
 
   # Early features (run at document-start)
   src/features/early/lazy-load-images.js
-  src/features/early/preconnect-hints.js
-  src/features/early/defer-fonts.js
   src/features/early/dedupe-requests.js
   src/features/early/block-telemetry.js
+  src/features/dashboard/hide-popular-modules.js
+  src/features/dashboard/hide-popular-paths.js
+  src/features/dashboard/hide-favourite-modules.js
+  src/features/dashboard/hide-job-role-paths.js
+  src/features/dashboard/hide-modules-in-progress.js
+  src/features/dashboard/_block-dashboard-api.js
   src/features/early/_runner.js
 
   # Global features
   src/features/global/dismiss-adblock.js
   src/features/global/theme-mode.js
-  src/features/global/hover-prefetch.js
   src/features/global/unstick-navbar.js
 
   # Dashboard features
@@ -53,11 +56,10 @@ FILES=(
 
   # Module features
   src/features/module/widen-content.js
-  src/features/module/toc-sidebar.js
   src/features/module/static-bottom-bar.js
   src/features/module/slim-bottom-bar.js
   src/features/module/green-inline-code.js
-  src/features/module/readable-code-blocks.js
+  src/features/module/useable-code-blocks.js
   src/features/module/toc-real-links.js
   src/features/module/compact-toc-layout.js
   src/features/module/expand-menu.js
