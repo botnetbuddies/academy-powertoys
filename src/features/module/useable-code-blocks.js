@@ -1,11 +1,11 @@
   registerFeature({
-    id: 'readable-code-blocks',
+    id: 'useable-code-blocks',
     label: 'Readable Code Blocks',
     description: 'Improve code block readability and usability (terminal-style backgrounds, click-to-copy, spacing, and reliable text selection)',
     scope: 'module',
     default: true,
     cleanup() {
-      document.getElementById('apt-readable-code-blocks')?.remove();
+      document.getElementById('apt-useable-code-blocks')?.remove();
       if (window._aptReadableCodeBlocksObs) {
         window._aptReadableCodeBlocksObs.disconnect();
         delete window._aptReadableCodeBlocksObs;
@@ -37,7 +37,7 @@
       });
     },
     run() {
-      const styleId = 'apt-readable-code-blocks';
+      const styleId = 'apt-useable-code-blocks';
       if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
         style.id = styleId;
