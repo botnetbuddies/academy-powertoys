@@ -17,6 +17,23 @@ If HTB Academy behaves oddly, disable Academy PowerToys and retest before contac
 2. Grab the latest `academy-powertoys.user.js` from [Releases](../../releases)
 3. Open it — your userscript manager will prompt to install
 
+## Example Showcase
+
+### Before / After
+
+<p>
+  <img src="assets/before.png" alt="Before" width="45%">
+  <img src="assets/after.png" alt="After" width="45%">
+</p>
+
+### Menu Options
+
+<p>
+  <img src="assets/menu1.png" alt="Menu Options 1" width="30%">
+  <img src="assets/menu2.png" alt="Menu Options 2" width="30%">
+  <img src="assets/menu3.png" alt="Menu Options 3" width="30%">
+</p>
+
 ## Development
 
 The source lives in `src/` as separate modules. A build script concatenates them into a single `.user.js` file.
@@ -79,4 +96,4 @@ git push --tags
 
 ## License
 
-MIT
+Unlicense
