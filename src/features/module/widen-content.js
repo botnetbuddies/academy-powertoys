@@ -20,30 +20,11 @@
       const style = document.createElement('style');
       style.id = styleId;
       style.textContent = `
-        main.h-full > section {
+        .module-content {
           max-width: ${cfg.maxWidth} !important;
         }
-        main.h-full > section > div > div {
+        .module-content > div > article {
           max-width: none !important;
-          width: ${cfg.textWidth} !important;
-        }
-        @media (min-width: 1024px) {
-          main.h-full > section > div > div {
-            width: ${cfg.textWidthLg} !important;
-          }
-        }
-        @media (min-width: 1536px) {
-          main.h-full > section > div > div {
-            width: ${cfg.textWidthXl} !important;
-          }
-        }
-        main.h-full > section > div > div:last-child:has(h3) {
-          width: ${cfg.tocWidth} !important;
-          min-width: ${cfg.tocMinWidth};
-        }
-        main.h-full > section > div > div:last-child:has(h3) .base-card {
-          padding-left: ${cfg.tocPadding} !important;
-          padding-right: ${cfg.tocPadding} !important;
         }
       `;
       document.head.appendChild(style);
