@@ -109,6 +109,9 @@
           outline: none; cursor: pointer; min-width: 170px; flex-shrink: 0;
         }
         .apt-select:focus { border-color: #9fef00; }
+        .apt-range-row { display: flex; flex-direction: column; gap: 6px; min-width: 160px; flex-shrink: 0; }
+        .apt-range-label { font-size: 12px; color: #9fef00; text-align: right; font-weight: 600; }
+        .apt-range { width: 100%; accent-color: #9fef00; cursor: pointer; }
       </style>
       <div id="apt-settings-panel">
         <div class="apt-header">
@@ -177,6 +180,29 @@
               ${options}
             </select>
           `;
+        } else if (feat.settingsUI && feat.settingsUI.type === 'range') {
+          const ui = feat.settingsUI;
+          const cfg = getFeatureSettings(feat.id);
+          const current = Number(cfg[ui.key] ?? feat.settings[ui.key]);
+          row.innerHTML = `
+            <div class="apt-feature-info">
+              <div class="apt-feature-label">${label}</div>
+              <div class="apt-feature-desc">${feat.description}</div>
+              <div class="apt-range-row" style="margin-top: 8px;">
+                <span class="apt-range-label">${enabled ? current + '%' : 'off'}</span>
+                <input type="range" class="apt-range"
+                  data-feature-range-id="${feat.id}"
+                  data-range-key="${ui.key}"
+                  min="${ui.min}" max="${ui.max}" step="${ui.step}"
+                  value="${current}"
+                  ${!enabled ? 'disabled' : ''}>
+              </div>
+            </div>
+            <label class="apt-toggle">
+              <input type="checkbox" data-feature-id="${feat.id}" ${enabled ? 'checked' : ''}>
+              <span class="apt-slider"></span>
+            </label>
+          `;
         } else {
           row.innerHTML = `
             <div class="apt-feature-info">
@@ -191,7 +217,6 @@
         }
         section.appendChild(row);
       }
-
       body.appendChild(section);
     }
 
@@ -210,9 +235,26 @@
 
     overlay.querySelectorAll('input[data-feature-id]').forEach(input => {
       input.addEventListener('change', () => {
-        setFeatureEnabled(input.dataset.featureId, input.checked);
-        const feat = features.find(f => f.id === input.dataset.featureId);
-        if (feat) hotToggle(feat, input.checked);
+        const id = input.dataset.featureId;
+        const enabled = input.checked;
+        setFeatureEnabled(id, enabled);
+        const feat = features.find(f => f.id === id);
+
+        const row = input.closest('.apt-feature-row');
+        const rangeInput = row?.querySelector('input[type="range"]');
+        const rangeLabel = row?.querySelector('.apt-range-label');
+
+        if (rangeInput) {
+          rangeInput.disabled = !enabled;
+          rangeLabel.textContent = enabled ? `${rangeInput.value}%` : 'off';
+          if (enabled) {
+            if (feat && isHotReloadable(feat)) applyFeature(feat);
+          } else {
+            if (feat) cleanupFeature(feat);
+          }
+        } else {
+          if (feat) hotToggle(feat, enabled);
+        }
       });
     });
 
@@ -234,6 +276,23 @@
             cleanupFeature(feat);
             applyFeature(feat);
           }
+        }
+      });
+    });
+
+    overlay.querySelectorAll('input[data-feature-range-id]').forEach(input => {
+      const rangeLabel = input.closest('.apt-range-row').querySelector('.apt-range-label');
+      input.addEventListener('input', () => {
+        const id = input.dataset.featureRangeId;
+        const key = input.dataset.rangeKey;
+        const value = Number(input.value);
+        rangeLabel.textContent = `${value}%`;
+        setFeatureEnabled(id, true);
+        setFeatureSetting(id, key, value);
+        const feat = features.find(f => f.id === id);
+        if (feat && isHotReloadable(feat)) {
+          cleanupFeature(feat);
+          applyFeature(feat);
         }
       });
     });
