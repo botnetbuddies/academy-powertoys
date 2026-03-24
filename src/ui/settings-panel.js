@@ -188,7 +188,7 @@
             <div class="apt-feature-info">
               <div class="apt-feature-label">${label}</div>
               <div class="apt-feature-desc">${feat.description}</div>
-              <div class="apt-range-row" style="margin-top: 8px;">
+              <div class="apt-range-row" style="margin-top: 8px; width: calc(100% + 54px);">
                 <span class="apt-range-label">${enabled ? current + '%' : 'off'}</span>
                 <input type="range" class="apt-range"
                   data-feature-range-id="${feat.id}"
@@ -198,7 +198,7 @@
                   ${!enabled ? 'disabled' : ''}>
               </div>
             </div>
-            <label class="apt-toggle">
+            <label class="apt-toggle" style="align-self: flex-start; margin-top: 2px;">
               <input type="checkbox" data-feature-id="${feat.id}" ${enabled ? 'checked' : ''}>
               <span class="apt-slider"></span>
             </label>
