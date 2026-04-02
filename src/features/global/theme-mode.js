@@ -434,6 +434,23 @@ a.tab-item.selected{
   background-color: lightgreen !important;
 }
 
+/* Links: readable blue on light backgrounds */
+a,
+a:link,
+a.text-green-400,
+a[class*="text-green"]{
+  color: #275df0 !important;
+}
+
+a:hover,
+a:focus-visible{
+  color: #0a37ca !important;
+}
+
+a:visited{
+  color: #0a37ca !important;
+}
+
 
         `;
     } else if (mode === "print") {
