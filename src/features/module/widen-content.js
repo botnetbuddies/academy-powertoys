@@ -3,7 +3,7 @@ registerFeature({
     label: 'Widen Content Area',
     description: 'Expand the main content column for more reading space',
     scope: 'module',
-    default: false,
+    default: true,
     hotReload: true,
     settings: {
       maxWidth: 90,
