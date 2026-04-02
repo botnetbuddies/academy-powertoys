@@ -15,6 +15,8 @@ If HTB Academy behaves oddly, disable Academy PowerToys and retest before contac
 
 1. Install [Violentmonkey](https://violentmonkey.github.io/), Tampermonkey, or Greasemonkey
 2. Grab the latest `academy-powertoys.user.js` from [Releases](../../releases)
+
+   Or to let your user script update it with [this](https://github.com/botnetbuddies/academy-powertoys/releases/latest/download/academy-powertoys.user.js) link
 3. Open it — your userscript manager will prompt to install
 
 ## Example Showcase
