@@ -22,7 +22,12 @@
   function runFeatures() {
     for (const feat of features) {
       if (feat.early) continue; // already ran at document-start
-      if (!getFeatureEnabled(feat.id)) continue;
+      if (!getFeatureEnabled(feat.id)) {
+        // Self-heal: if a feature is disabled but left residual DOM/state
+        // (e.g. missed toggle event or SPA rerender race), always clean it up.
+        cleanupFeature(feat);
+        continue;
+      }
       applyFeature(feat);
     }
   }
