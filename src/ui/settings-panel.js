@@ -255,6 +255,9 @@
         } else {
           if (feat) hotToggle(feat, enabled);
         }
+
+        // Force an immediate full pass so live changes are visible while panel is open.
+        if (typeof runFeatures === 'function') runFeatures();
       });
     });
 
@@ -277,6 +280,9 @@
             applyFeature(feat);
           }
         }
+
+        // Force an immediate full pass so live changes are visible while panel is open.
+        if (typeof runFeatures === 'function') runFeatures();
       });
     });
 
@@ -294,6 +300,9 @@
           cleanupFeature(feat);
           applyFeature(feat);
         }
+
+        // Force an immediate full pass so live changes are visible while panel is open.
+        if (typeof runFeatures === 'function') runFeatures();
       });
     });
 
