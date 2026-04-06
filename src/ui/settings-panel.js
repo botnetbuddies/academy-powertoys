@@ -184,6 +184,7 @@
           const ui = feat.settingsUI;
           const cfg = getFeatureSettings(feat.id);
           const current = Number(cfg[ui.key] ?? feat.settings[ui.key]);
+          const unit = ui.unit || '%';
           row.innerHTML = `
             <div class="apt-feature-info">
               <div class="apt-feature-label">${label}</div>
@@ -193,6 +194,7 @@
                 <input type="range" class="apt-range"
                   data-feature-range-id="${feat.id}"
                   data-range-key="${ui.key}"
+                  data-range-key="${unit}"
                   min="${ui.min}" max="${ui.max}" step="${ui.step}"
                   value="${current}"
                   ${!enabled ? 'disabled' : ''}>
