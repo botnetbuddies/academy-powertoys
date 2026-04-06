@@ -57,8 +57,6 @@ FILES=(
   # Module features
   src/features/module/widen-content.js
   src/features/module/toc-sidebar-width.js
-  src/features/module/static-bottom-bar.js
-  src/features/module/slim-bottom-bar.js
   src/features/module/green-inline-code.js
   src/features/module/useable-code-blocks.js
   src/features/module/toc-real-links.js
