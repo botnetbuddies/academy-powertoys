@@ -68,6 +68,7 @@ FILES=(
   src/features/module/expand-questions.js
   src/features/module/quest-log.js
   src/features/module/hide-solutions-promo.js
+  src/features/module/aen-blind-mode.js
   src/features/module/label-toolbar-buttons.js
 
   # UI
