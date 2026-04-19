@@ -64,6 +64,7 @@ FILES=(
   src/features/module/fix-collapse-all.js
   src/features/module/expand-current-module-info.js
   src/features/module/expand-questions.js
+  src/features/module/quick-start-module.js
   src/features/module/quest-log.js
   src/features/module/hide-solutions-promo.js
   src/features/module/aen-blind-mode.js
