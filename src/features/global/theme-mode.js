@@ -93,6 +93,24 @@ registerFeature({
 
           /* Progress bars */
           progress { accent-color: #1f7a0a; }
+          progress.progress-success { accent-color: #1f7a0a !important; }
+          progress.progress-success::-webkit-progress-value { background-color: #1f7a0a !important; }
+          progress.progress-success::-moz-progress-bar { background-color: #1f7a0a !important; }
+          progress.progress-primary { accent-color: #111111 !important; }
+          progress.progress-primary::-webkit-progress-value { background-color: #111111 !important; }
+          progress.progress-primary::-moz-progress-bar { background-color: #111111 !important; }
+          .text-notify ~ div progress.progress-small:not(.progress-error):not(.progress-info):not(.progress-primary):not(.progress-success) {
+            accent-color: #a855f7 !important;
+          }
+          .text-notify ~ div progress.progress-small:not(.progress-error):not(.progress-info):not(.progress-primary):not(.progress-success)::-webkit-progress-value {
+            background-color: #a855f7 !important;
+          }
+          .text-notify ~ div progress.progress-small:not(.progress-error):not(.progress-info):not(.progress-primary):not(.progress-success)::-moz-progress-bar {
+            background-color: #a855f7 !important;
+          }
+          .p-progressbar .p-progressbar-value {
+            background: #1f7a0a !important;
+          }
 
           /* Scrollbar */
           ::-webkit-scrollbar-track { background: #dce4ed !important; }
@@ -116,6 +134,39 @@ registerFeature({
 
           /* Dashboard — streak card */
           .streak-progress-bar { background-color: #cbd5e1 !important; }
+
+          /* Dashboard — new XP/streak decorative layers */
+          .htb-xp-rank-card { background-color: #e4eaf1 !important; }
+          .htb-xp-rank-card .rank-image-grid-decor {
+            background-color: rgba(184, 196, 211, 0.25) !important;
+            background-image: none !important;
+            opacity: 0.35 !important;
+          }
+          .htb-xp-rank-card .rank-image-decor {
+            opacity: 0.12 !important;
+            filter: grayscale(0.4) brightness(1.2) !important;
+          }
+          .htb-xp-rank-card .level-title-grade-container .level-title-container,
+          .htb-xp-rank-card .level-title-grade-container .grade-container,
+          .htb-xp-rank-card .htb-bg-neutral-700 {
+            background-color: #d6e0ec !important;
+            border: 1px solid #b8c4d3 !important;
+          }
+          .htb-xp-rank-card .level-title-grade-container .htb-text-primary,
+          .htb-xp-rank-card .level-title-grade-container .htb-text-secondary {
+            color: #1a1a2e !important;
+          }
+          .htb-xp-rank-card .rank-card-grade .grade-diamond {
+            border-color: #7f8fa5 !important;
+          }
+          [class*="bg-[url('/streaks/streak-card-bg.svg')]"] {
+            background-image: none !important;
+            padding-bottom: 0 !important;
+          }
+          .clipped-bg {
+            background-image: none !important;
+            background-color: #e4eaf1 !important;
+          }
 
           /* Dashboard — htb buttons */
           .htb-button--primary { background-color: #1f7a0a !important; color: #fff !important; }
