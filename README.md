@@ -36,6 +36,35 @@ If HTB Academy behaves oddly, disable Academy PowerToys and retest before contac
   <img src="assets/menu3.png" alt="Menu Options 3" width="30%">
 </p>
 
+#### Available Features
+
+- **Theme**: Switches between default dark and our custom light mode.
+- **Default Dashboard Tab**: Auto-selects your preferred dashboard tab on open.
+- **Expand Path Module List**: Removes the scroll cap in Enrolled Path module lists showing all modules.
+- **Grid Module Carousels**: Turns selected module carousels into a wrapped grid layout.
+- **Hide Favourite Modules**: Hides the Favourite Modules carousel and blocks its API request.
+- **Hide Get a New Job**: Hides the job-role carousel and blocks its API request.
+- **Hide Modules In Progress**: Hides the in-progress carousel and blocks its API request.
+- **Hide Popular Modules**: Hides the Popular Modules carousel and blocks its API request.
+- **Hide Popular Paths**: Hides the Popular Paths carousel and blocks its API request.
+- **Completed Items Last**: Sorts completed modules/paths to the end in dashboard lists.
+- **AEN Blind Mode**: Hides most Attacking Enterprise Network section content except connection/target essentials.
+- **Compact TOC Layout**: Makes the sidebar TOC denser and easier to scan.
+- **Expand All Sections (Module Info)**: Auto-expands syllabus sections on module overview pages.
+- **Auto-Expand Sidebar Menu**: Opens all accordion groups in the module sidebar automatically.
+- **Expand All Questions**: Auto-opens all question accordions on module pages.
+- **Fix Collapse/Expand All Sections**: Repairs the broken global collapse/expand toggle in module info.
+- **Green Inline Code**: Restores green inline code styling and keeps external links readable.
+- **Label Toolbar Buttons**: Adds text labels to icon-only toolbar buttons.
+- **Quest Log**: Shows a floating question/answer sidebar while working through modules.
+- **Quick Start Module**: Opens module cards directly at your in-progress or first section from the dashboard. No more clicking on a module to click to go to the module.
+- **Review Mode**: Hides already solved answers so you can go back through the module without spoilers and fill the anwer in again locally.
+- **Real Section Links**: Makes TOC/info items real links for ctrl+click and new-tab behavior.
+- **TOC Sidebar Width**: Lets you tune inline TOC width when Widen Content is enabled.
+- **Usable Code Blocks**: Improves code blocks with better readability, copy behavior, and selection. Includes markdown support.
+- **Widen Content Area**: Expands the main module content column for more reading space.
+- And more!
+
 ## Development
 
 The source lives in `src/` as separate modules. A build script concatenates them into a single `.user.js` file.
