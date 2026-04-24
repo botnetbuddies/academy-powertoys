@@ -57,7 +57,7 @@ FILES=(
   src/features/module/widen-content.js
   src/features/module/toc-sidebar-width.js
   src/features/module/green-inline-code.js
-  src/features/module/useable-code-blocks.js
+  src/features/module/usable-code-blocks.js
   src/features/module/toc-real-links.js
   src/features/module/compact-toc-layout.js
   src/features/module/expand-menu.js

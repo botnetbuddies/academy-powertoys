@@ -1,18 +1,22 @@
 registerFeature({
-  id: "useable-code-blocks",
+  id: "usable-code-blocks",
   label: "Usable Code Blocks",
   description: "Improve code block readability and usability (terminal-style backgrounds, click-to-copy, spacing, and reliable text selection)",
   scope: "module",
   default: true,
   cleanup() {
-    document.getElementById("apt-useable-code-blocks")?.remove();
-    if (window._aptUseableCodeBlocksObs) {
-      window._aptUseableCodeBlocksObs.disconnect();
-      delete window._aptUseableCodeBlocksObs;
+    document.getElementById("apt-usable-code-blocks")?.remove();
+    if (window._aptUsableCodeBlocksObs) {
+      window._aptUsableCodeBlocksObs.disconnect();
+      delete window._aptUsableCodeBlocksObs;
     }
-    if (window._aptUseableCodeBlocksCopyHandler) {
-      document.removeEventListener("copy", window._aptUseableCodeBlocksCopyHandler, true);
-      delete window._aptUseableCodeBlocksCopyHandler;
+    if (window._aptUsableCodeBlocksCopyHandler) {
+      document.removeEventListener("copy", window._aptUsableCodeBlocksCopyHandler, true);
+      delete window._aptUsableCodeBlocksCopyHandler;
+    }
+    if (window._aptSelectAllHandler) {
+      document.removeEventListener('keydown', window._aptSelectAllHandler, true);
+      delete window._aptSelectAllHandler;
     }
 
     document.querySelectorAll('main.h-full article pre[data-apt-copy-wired="1"]').forEach((pre) => {
@@ -41,12 +45,12 @@ registerFeature({
     });
   },
   run() {
-    const styleId = "apt-useable-code-blocks";
+    const styleId = "apt-usable-code-blocks";
     if (!document.getElementById(styleId)) {
       const style = document.createElement("style");
       style.id = styleId;
       style.textContent = `
-          /* Keep code blocks useable and never clipped */
+          /* Keep code blocks usable and never clipped */
           main.h-full article pre.shiki,
           main.h-full article pre[class*="language-"] {
             max-width: 100% !important;
@@ -501,7 +505,7 @@ registerFeature({
     }
 
     function wireSelectionCopy() {
-      if (window._aptUseableCodeBlocksCopyHandler) return;
+      if (window._aptUsableCodeBlocksCopyHandler) return;
 
       const onCopy = (e) => {
         const selection = window.getSelection?.();
@@ -527,18 +531,37 @@ registerFeature({
       };
 
       document.addEventListener("copy", onCopy, true);
-      window._aptUseableCodeBlocksCopyHandler = onCopy;
+      window._aptUsableCodeBlocksCopyHandler = onCopy;
+    }
+
+    function wireSelectAll() {
+      if (window._aptSelectAllHandler) return;
+      const onKeyDown = (e) => {
+        if (!(e.key === 'a' && (e.ctrlKey || e.metaKey))) return;
+        if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+        const article = document.querySelector('main.h-full article');
+        if (!article) return;
+        e.preventDefault();
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(article);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      };
+      document.addEventListener('keydown', onKeyDown, true);
+      window._aptSelectAllHandler = onKeyDown;
     }
 
     wireAllBlocks();
     wireSelectionCopy();
+    wireSelectAll();
 
-    if (!window._aptUseableCodeBlocksObs) {
+    if (!window._aptUsableCodeBlocksObs) {
       const obs = new MutationObserver(() => {
         wireAllBlocks();
       });
       obs.observe(document.body, { childList: true, subtree: true });
-      window._aptUseableCodeBlocksObs = obs;
+      window._aptUsableCodeBlocksObs = obs;
     }
   },
 });
