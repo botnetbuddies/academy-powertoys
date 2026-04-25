@@ -1,14 +1,22 @@
 registerFeature({
-  id: "useable-code-blocks",
+  id: "usable-code-blocks",
   label: "Usable Code Blocks",
   description: "Improve code block readability and usability (terminal-style backgrounds, click-to-copy, spacing, and reliable text selection)",
   scope: "module",
   default: true,
   cleanup() {
-    document.getElementById("apt-useable-code-blocks")?.remove();
-    if (window._aptUseableCodeBlocksObs) {
-      window._aptUseableCodeBlocksObs.disconnect();
-      delete window._aptUseableCodeBlocksObs;
+    document.getElementById("apt-usable-code-blocks")?.remove();
+    if (window._aptUsableCodeBlocksObs) {
+      window._aptUsableCodeBlocksObs.disconnect();
+      delete window._aptUsableCodeBlocksObs;
+    }
+    if (window._aptUsableCodeBlocksCopyHandler) {
+      document.removeEventListener("copy", window._aptUsableCodeBlocksCopyHandler, true);
+      delete window._aptUsableCodeBlocksCopyHandler;
+    }
+    if (window._aptSelectAllHandler) {
+      document.removeEventListener('keydown', window._aptSelectAllHandler, true);
+      delete window._aptSelectAllHandler;
     }
 
     document.querySelectorAll('main.h-full article pre[data-apt-copy-wired="1"]').forEach((pre) => {
@@ -37,12 +45,12 @@ registerFeature({
     });
   },
   run() {
-    const styleId = "apt-useable-code-blocks";
+    const styleId = "apt-usable-code-blocks";
     if (!document.getElementById(styleId)) {
       const style = document.createElement("style");
       style.id = styleId;
       style.textContent = `
-          /* Keep code blocks useable and never clipped */
+          /* Keep code blocks usable and never clipped */
           main.h-full article pre.shiki,
           main.h-full article pre[class*="language-"] {
             max-width: 100% !important;
@@ -407,6 +415,51 @@ registerFeature({
         .replace(/\n+$/, "");
     }
 
+    function cloneSelectionContainer(selection) {
+      const container = document.createElement("div");
+      for (let i = 0; i < selection.rangeCount; i += 1) {
+        container.appendChild(selection.getRangeAt(i).cloneContents());
+      }
+      return container;
+    }
+
+    function replacePreWithFencedCode(container) {
+      const pres = [...container.querySelectorAll("pre")];
+      if (pres.length === 0) return false;
+
+      for (const pre of pres) {
+        const language = getLanguage(pre);
+        const kind = getTerminalKind(language);
+        const markdownLanguage = getMarkdownLanguage(language, kind);
+        const codeText = extractCodeText(pre);
+        if (!codeText) continue;
+        const fence = `\n\n\`\`\`${markdownLanguage}\n${codeText}\n\`\`\`\n\n`;
+        const marker = document.createElement("div");
+        marker.setAttribute("data-apt-fenced-code", "1");
+        marker.textContent = fence;
+        pre.replaceWith(marker);
+      }
+      return true;
+    }
+
+    function replacePreWithHtmlCodeBlocks(container) {
+      const pres = [...container.querySelectorAll("pre")];
+      if (pres.length === 0) return false;
+
+      for (const pre of pres) {
+        const language = getLanguage(pre);
+        const kind = getTerminalKind(language);
+        const markdownLanguage = getMarkdownLanguage(language, kind);
+        const codeText = extractCodeText(pre);
+        if (!codeText) continue;
+
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = buildHtmlCodeBlock(codeText, markdownLanguage);
+        pre.replaceWith(wrapper.firstChild);
+      }
+      return true;
+    }
+
     function wireCopy(pre) {
       if (pre.dataset.aptCopyWired === "1") return;
       pre.dataset.aptCopyWired = "1";
@@ -451,14 +504,64 @@ registerFeature({
       document.querySelectorAll(preSelector).forEach(wireCopy);
     }
 
-    wireAllBlocks();
+    function wireSelectionCopy() {
+      if (window._aptUsableCodeBlocksCopyHandler) return;
 
-    if (!window._aptUseableCodeBlocksObs) {
+      const onCopy = (e) => {
+        const selection = window.getSelection?.();
+        if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+        const plainContainer = cloneSelectionContainer(selection);
+        const hasCodeBlocks = replacePreWithFencedCode(plainContainer);
+        if (!hasCodeBlocks) return;
+
+        const plainText = String(plainContainer.innerText || "").replace(/\n{3,}/g, "\n\n");
+        if (!plainText.trim()) return;
+
+        const clipboard = e.clipboardData;
+        if (!clipboard || typeof clipboard.setData !== "function") return;
+
+        e.preventDefault();
+        clipboard.setData("text/plain", plainText);
+
+        const htmlContainer = cloneSelectionContainer(selection);
+        if (replacePreWithHtmlCodeBlocks(htmlContainer)) {
+          clipboard.setData("text/html", htmlContainer.innerHTML);
+        }
+      };
+
+      document.addEventListener("copy", onCopy, true);
+      window._aptUsableCodeBlocksCopyHandler = onCopy;
+    }
+
+    function wireSelectAll() {
+      if (window._aptSelectAllHandler) return;
+      const onKeyDown = (e) => {
+        if (!(e.key === 'a' && (e.ctrlKey || e.metaKey))) return;
+        if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+        const article = document.querySelector('main.h-full article');
+        if (!article) return;
+        e.preventDefault();
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(article);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      };
+      document.addEventListener('keydown', onKeyDown, true);
+      window._aptSelectAllHandler = onKeyDown;
+    }
+
+    wireAllBlocks();
+    wireSelectionCopy();
+    wireSelectAll();
+
+    if (!window._aptUsableCodeBlocksObs) {
       const obs = new MutationObserver(() => {
         wireAllBlocks();
       });
       obs.observe(document.body, { childList: true, subtree: true });
-      window._aptUseableCodeBlocksObs = obs;
+      window._aptUsableCodeBlocksObs = obs;
     }
   },
 });
