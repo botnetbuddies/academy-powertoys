@@ -52,6 +52,7 @@ FILES=(
   src/features/dashboard/expand-path-modules.js
   src/features/dashboard/rename-job-section.js
   src/features/dashboard/grid-carousels.js
+  src/features/dashboard/completed-path-module-links.js
 
   # Module features
   src/features/module/widen-content.js
