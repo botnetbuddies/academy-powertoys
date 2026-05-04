@@ -1,59 +1,62 @@
-  // Shared fetch/Response interceptor for dashboard section hiding features.
-  // Runs early (document-start) and checks each feature's enabled state.
-  // The individual registerFeature() calls above define the settings toggles;
-  // this block does the actual blocking.
-  (function() {
-    if (window._aptDashBlockInstalled) return;
+// Shared fetch/Response interceptor for dashboard section hiding features.
+// Runs early (document-start) and checks each feature's enabled state.
+// The individual registerFeature() calls above define the settings toggles;
+// this block does the actual blocking.
+(function() {
+  if (window._aptDashBlockInstalled) return;
 
-    const TARGETS = [
-      {
-        id: 'hide-popular-modules',
-        pathname: '/api/v2/modules',
-        param: 'sort[by]', paramValue: 'popularity',
-        title: 'Popular Modules',
-      },
-      {
-        id: 'hide-popular-paths',
-        pathname: '/api/v2/paths',
-        param: 'sort[by]', paramValue: 'popularity',
-        title: 'Popular Paths',
-      },
-      {
-        id: 'hide-favourite-modules',
-        pathname: '/api/v2/modules',
-        param: 'is_favourite', paramValue: 'true',
-        title: 'Favourite Modules',
-      },
-      {
-        id: 'hide-job-role-paths',
-        pathname: '/api/v2/paths',
-        param: 'type', paramValue: 'job_role',
-        title: 'Get a new Job',
-      },
-      {
-        id: 'hide-modules-in-progress',
-        pathname: '/api/v2/modules',
-        param: 'state', paramValue: 'in_progress',
-        title: 'Modules In Progress',
-      },
-    ];
+  const TARGETS = [
+    {
+      id: 'hide-popular-modules',
+      pathname: '/api/v2/modules',
+      param: 'sort[by]', paramValue: 'popularity',
+      title: 'Popular Modules',
+    },
+    {
+      id: 'hide-popular-paths',
+      pathname: '/api/v2/paths',
+      param: 'sort[by]', paramValue: 'popularity',
+      title: 'Popular Paths',
+    },
+    {
+      id: 'hide-favourite-modules',
+      pathname: '/api/v2/modules',
+      param: 'is_favourite', paramValue: 'true',
+      title: 'Favourite Modules',
+      dashboardOnly: true,
+    },
+    {
+      id: 'hide-job-role-paths',
+      pathname: '/api/v2/paths',
+      param: 'type', paramValue: 'job_role',
+      title: 'Get a new Job',
+      dashboardOnly: true,
+    },
+    {
+      id: 'hide-modules-in-progress',
+      pathname: '/api/v2/modules',
+      param: 'state', paramValue: 'in_progress',
+      title: 'Modules In Progress',
+    },
+  ];
 
-    // Check which features are enabled and build the block list.
-    // We resolve this NOW so the injected page script doesn't need
-    // access to the userscript's settings functions.
-    const activeTargets = TARGETS.filter(t => getFeatureEnabled(t.id));
+  // Check which features are enabled and build the block list.
+  // We resolve this NOW so the injected page script doesn't need
+  // access to the userscript's settings functions.
+  const activeTargets = TARGETS.filter(t => getFeatureEnabled(t.id));
 
-    if (activeTargets.length > 0) {
-      // Inject interception code directly into the PAGE context.
-      // This bypasses Tampermonkey's sandbox so our patches apply to
-      // the page's actual Response.prototype, not the userscript's copy.
-      const script = document.createElement('script');
-      script.textContent = `(function(){
+  if (activeTargets.length > 0) {
+    // Inject interception code directly into the PAGE context.
+    // This bypasses Tampermonkey's sandbox so our patches apply to
+    // the page's actual Response.prototype, not the userscript's copy.
+    const script = document.createElement('script');
+    script.textContent = `(function(){
         if(window._aptDashBlockPageInstalled)return;
         var EMPTY='{"data":[]}';
         var targets=${JSON.stringify(activeTargets.map(t => ({
-          pathname: t.pathname, param: t.param, paramValue: t.paramValue,
-        })))};
+      pathname: t.pathname, param: t.param, paramValue: t.paramValue,
+      dashboardOnly: t.dashboardOnly || false,
+    })))};
         function m(url){
           try{
             var p=new URL(String(url),location.origin);
@@ -62,6 +65,7 @@
               var t=targets[i];
               if(p.pathname!==t.pathname)continue;
               if(t.param&&p.searchParams.get(t.param)!==t.paramValue)continue;
+              if(t.dashboardOnly&&location.pathname!=='/app/dashboard')continue;
               return true;
             }
           }catch(e){}
@@ -107,37 +111,37 @@
         };
         window._aptDashBlockPageInstalled='1';
       })();`;
-      (document.head || document.documentElement).appendChild(script);
-      script.remove();
-    }
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+  }
 
-    // Hide carousel sections via CSS + MutationObserver
-    // (this runs in userscript context — DOM manipulation works fine here)
-    const style = document.createElement('style');
-    style.id = 'apt-hide-dash-sections';
-    style.textContent = `[data-apt-hidden-section] { display: none !important; }`;
-    (document.head || document.documentElement).appendChild(style);
+  // Hide carousel sections via CSS + MutationObserver
+  // (this runs in userscript context — DOM manipulation works fine here)
+  const style = document.createElement('style');
+  style.id = 'apt-hide-dash-sections';
+  style.textContent = `[data-apt-hidden-section] { display: none !important; }`;
+  (document.head || document.documentElement).appendChild(style);
 
-    function hideSections() {
-      let allFound = true;
-      for (const t of activeTargets) {
-        const heading = [...document.querySelectorAll('h2.carousel-title')].find(
-          h => h.textContent.trim() === t.title
-        );
-        if (!heading) { allFound = false; continue; }
-        const section = heading.closest('section[data-v-09c02e11]');
-        if (section && !section.hasAttribute('data-apt-hidden-section')) {
-          section.setAttribute('data-apt-hidden-section', '');
-        }
+  function hideSections() {
+    let allFound = true;
+    for (const t of activeTargets) {
+      const heading = [...document.querySelectorAll('h2.carousel-title')].find(
+        h => h.textContent.trim() === t.title
+      );
+      if (!heading) { allFound = false; continue; }
+      const section = heading.closest('section[data-v-09c02e11]');
+      if (section && !section.hasAttribute('data-apt-hidden-section')) {
+        section.setAttribute('data-apt-hidden-section', '');
       }
-      return allFound;
     }
+    return allFound;
+  }
 
-    if (!hideSections()) {
-      const obs = new MutationObserver(() => { if (hideSections()) obs.disconnect(); });
-      obs.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => obs.disconnect(), 8000);
-    }
+  if (!hideSections()) {
+    const obs = new MutationObserver(() => { if (hideSections()) obs.disconnect(); });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(() => obs.disconnect(), 8000);
+  }
 
-    window._aptDashBlockInstalled = '1';
-  })();
+  window._aptDashBlockInstalled = '1';
+})();
