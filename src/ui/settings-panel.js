@@ -185,16 +185,17 @@
           const cfg = getFeatureSettings(feat.id);
           const current = Number(cfg[ui.key] ?? feat.settings[ui.key]);
           const unit = ui.unit || '%';
+          const currentLabel = `${current}${unit}`;
           row.innerHTML = `
             <div class="apt-feature-info">
               <div class="apt-feature-label">${label}</div>
               <div class="apt-feature-desc">${feat.description}</div>
               <div class="apt-range-row" style="margin-top: 8px; width: calc(100% + 54px);">
-                <span class="apt-range-label">${enabled ? current + '%' : 'off'}</span>
+                <span class="apt-range-label">${enabled ? currentLabel : 'off'}</span>
                 <input type="range" class="apt-range"
                   data-feature-range-id="${feat.id}"
                   data-range-key="${ui.key}"
-                  data-range-key="${unit}"
+                  data-range-unit="${unit}"
                   min="${ui.min}" max="${ui.max}" step="${ui.step}"
                   value="${current}"
                   ${!enabled ? 'disabled' : ''}>
@@ -248,7 +249,8 @@
 
         if (rangeInput) {
           rangeInput.disabled = !enabled;
-          rangeLabel.textContent = enabled ? `${rangeInput.value}%` : 'off';
+          const unit = rangeInput.dataset.rangeUnit || '%';
+          rangeLabel.textContent = enabled ? `${rangeInput.value}${unit}` : 'off';
           if (enabled) {
             if (feat && isHotReloadable(feat)) applyFeature(feat);
           } else {
@@ -293,8 +295,9 @@
       input.addEventListener('input', () => {
         const id = input.dataset.featureRangeId;
         const key = input.dataset.rangeKey;
+        const unit = input.dataset.rangeUnit || '%';
         const value = Number(input.value);
-        rangeLabel.textContent = `${value}%`;
+        rangeLabel.textContent = `${value}${unit}`;
         setFeatureEnabled(id, true);
         setFeatureSetting(id, key, value);
         const feat = features.find(f => f.id === id);

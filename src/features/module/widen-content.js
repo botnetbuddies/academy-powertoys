@@ -51,7 +51,12 @@ registerFeature({
           min-width: 0 !important;
         }
 
-        .module-lab-row.apt-toc-inline-layout > .sidebar-open {
+        .module-lab-row.apt-toc-inline-layout > .desktop-sidebar-placeholder {
+          display: none !important;
+        }
+
+        .module-lab-row.apt-toc-inline-layout > .sidebar-open,
+        .module-lab-row.apt-toc-inline-layout > .desktop-sidebar-panel {
           position: sticky !important;
           top: 0.75rem !important;
           right: auto !important;
@@ -69,7 +74,10 @@ registerFeature({
 
       const applyInlineLayout = () => {
         document.querySelectorAll('.module-lab-row').forEach((row) => {
-          const toc = Array.from(row.children).find((child) => child.classList?.contains('sidebar-open'));
+          const toc = Array.from(row.children).find((child) =>
+            child.classList?.contains('sidebar-open') ||
+            child.classList?.contains('desktop-sidebar-panel')
+          );
           if (!toc) {
             row.classList.remove('apt-toc-inline-layout');
             return;
