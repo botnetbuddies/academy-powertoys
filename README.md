@@ -63,6 +63,8 @@ If HTB Academy behaves oddly, disable Academy PowerToys and retest before contac
 - **TOC Sidebar Width**: Lets you tune inline TOC width when Widen Content is enabled.
 - **Usable Code Blocks**: Improves code blocks with better readability, copy behavior, and selection. Includes markdown support.
 - **Widen Content Area**: Expands the main module content column for more reading space.
+- **Image Zoom**: Click any image in module content to open it in a full-screen zoom overlay
+- **Completed Module Links**: Restores the navigation button on completed modules in the Enrolled Path tab
 - And more!
 
 ## Development
