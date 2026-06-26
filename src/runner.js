@@ -44,8 +44,7 @@
       }
     } catch { /* not available */ }
 
-    // Add floating settings button
-    addSettingsButton();
+    // Settings button is applied by the 'settings-button' feature in runFeatures().
 
     // Run DOM-dependent features now + on DOM changes
     runFeatures();
